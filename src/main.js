@@ -1,5 +1,5 @@
 // Point d'entrée principal de l'application Mondes Immergés
-// Version JavaScript classique pour GitHub Pages
+// Version JavaScript classique SANS IMPORTS pour GitHub Pages
 
 /**
  * Fonction principale d'initialisation
@@ -20,27 +20,27 @@ function initialize() {
     }
     
     // Désactiver complètement toutes les interactions de glissement
-	const style = document.createElement('style');
-	style.textContent = `
-		#main-container, #globe-container, canvas {
-			user-select: none !important;
-			-webkit-user-select: none !important;
-			-moz-user-select: none !important;
-			-ms-user-select: none !important;
-			touch-action: none !important;
-			-webkit-user-drag: none !important;
-			-khtml-user-drag: none !important;
-			-moz-user-drag: none !important;
-			-o-user-drag: none !important;
-			user-drag: none !important;
-			-webkit-touch-callout: none !important;
-			pointer-events: auto !important;
-			cursor: crosshair !important;
-		}
-	`;
-	document.head.appendChild(style);
-	
-	// Masquer l'écran d'accueil dès le début
+    const style = document.createElement('style');
+    style.textContent = `
+        #main-container, #globe-container, canvas {
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            touch-action: none !important;
+            -webkit-user-drag: none !important;
+            -khtml-user-drag: none !important;
+            -moz-user-drag: none !important;
+            -o-user-drag: none !important;
+            user-drag: none !important;
+            -webkit-touch-callout: none !important;
+            pointer-events: auto !important;
+            cursor: crosshair !important;
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Masquer l'écran d'accueil dès le début
     const welcomeScreen = document.getElementById('welcome-screen');
     if (welcomeScreen) {
         welcomeScreen.style.display = 'none';
@@ -95,7 +95,7 @@ function initialize() {
     
     // Simuler le chargement progressif plus rapidement
     resourceTypes.forEach((resource, index) => {
-        const delay = 100 + Math.random() * 200; // Durées plus courtes
+        const delay = 100 + Math.random() * 200;
         setTimeout(() => {
             console.log(`Ressource chargée: ${resource}`);
             updateProgress();
@@ -112,6 +112,8 @@ function initialize() {
 function createStarfieldAnimation() {
     const mainContainer = document.getElementById('main-container');
     
+    if (!mainContainer) return;
+    
     // Vérifier si l'élément étoilé existe déjà
     if (mainContainer.querySelector('.starry-background')) {
         return;
@@ -123,7 +125,7 @@ function createStarfieldAnimation() {
     mainContainer.appendChild(starryBg);
     
     // Ajouter des étoiles animées
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 50; i++) {
         const star = document.createElement('div');
         star.className = 'star';
         
@@ -175,7 +177,6 @@ function createStarfieldAnimation() {
 function startApplication() {
     console.log('Démarrage de l\'application...');
     
-    // Pour cette version simplifiée, juste afficher l'interface
     const loadingScreen = document.getElementById('loading-screen');
     const mainContainer = document.getElementById('main-container');
     
@@ -200,6 +201,58 @@ function startApplication() {
     
     // Initialiser les interactions de base
     initBasicInteractions();
+    
+    // Créer un globe basique avec Three.js
+    createBasicGlobe();
+}
+
+/**
+ * Crée un globe basique avec Three.js
+ */
+function createBasicGlobe() {
+    const container = document.getElementById('globe-container');
+    if (!container) return;
+    
+    // Créer la scène Three.js
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0x000000, 0);
+    container.appendChild(renderer.domElement);
+    
+    // Créer une sphère basique
+    const geometry = new THREE.SphereGeometry(2, 32, 32);
+    const material = new THREE.MeshBasicMaterial({ 
+        color: 0x0044aa,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.7
+    });
+    const globe = new THREE.Mesh(geometry, material);
+    scene.add(globe);
+    
+    // Positionner la caméra
+    camera.position.z = 5;
+    
+    // Animation de rotation
+    function animate() {
+        requestAnimationFrame(animate);
+        globe.rotation.y += 0.005;
+        renderer.render(scene, camera);
+    }
+    
+    animate();
+    
+    // Gérer le redimensionnement
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+    
+    console.log('Globe basique créé avec Three.js');
 }
 
 /**
@@ -267,6 +320,8 @@ function initBasicInteractions() {
  * Anime un clic de bouton
  */
 function animateButtonClick(button) {
+    if (!button) return;
+    
     gsap.timeline()
         .to(button, {
             scale: 0.9,
@@ -279,6 +334,9 @@ function animateButtonClick(button) {
         });
 }
 
+/**
+ * Améliore l'écran de chargement
+ */
 function enhanceLoadingScreen() {
     const loadingScreen = document.getElementById('loading-screen');
     
@@ -372,6 +430,9 @@ function enhanceLoadingScreen() {
     loadingScreen.appendChild(progressContainer);
 }
 
+/**
+ * Initialise le curseur personnalisé
+ */
 function initCustomCursor() {
     const cursor = document.querySelector('.cursor');
     const follower = document.querySelector('.cursor-follower');
@@ -388,16 +449,18 @@ function initCustomCursor() {
     });
 }
 
-// S'assurer que le DOM est complètement chargé avant d'initialiser
+// Point d'entrée principal
 document.addEventListener('DOMContentLoaded', () => {
-    // D'abord améliorer l'écran de chargement pour créer les éléments
+    console.log('DOM chargé, initialisation de l\'application...');
+    
+    // Améliorer l'écran de chargement
     enhanceLoadingScreen();
     
-    // Puis démarrer l'initialisation après un court délai
+    // Démarrer l'initialisation
     setTimeout(() => {
         initialize();
     }, 100);
     
-    // Initialiser le curseur
+    // Initialiser le curseur personnalisé
     initCustomCursor();
 });
