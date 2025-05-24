@@ -1,7 +1,7 @@
 // Point d'entrée principal de l'application Mondes Immergés
 import './styles/main.css';
 import { initApp, getAppInstance } from './app.js';
-import { jelly } from 'ldrs';
+// Import ldrs supprimé - sera chargé via CDN
 
 /**
  * Fonction principale d'initialisation
@@ -229,8 +229,6 @@ function triggerStartupSequence(app) {
     }
 }
 
-	// L'import est déjà fait en haut du fichier, donc supprimer ces lignes
-
 function enhanceLoadingScreen() {
     const loadingScreen = document.getElementById('loading-screen');
     
@@ -245,25 +243,61 @@ function enhanceLoadingScreen() {
         existingSpinner.remove();
     }
     
-    // Enregistrer l'icône Jelly (une seule fois)
-    jelly.register();
+    // Vérifier si ldrs est disponible avant de l'utiliser
+    if (typeof window.ldrs !== 'undefined' && window.ldrs.jelly) {
+        // Enregistrer l'icône Jelly (une seule fois)
+        window.ldrs.jelly.register();
 
-    // Créer l'icône Jelly
-    const customSpinner = document.createElement('l-jelly');
-    customSpinner.setAttribute('size', '60');
-    customSpinner.setAttribute('speed', '0.9');
-    customSpinner.setAttribute('color', '#ffcc00');
-    customSpinner.style.cssText = `
-        margin-bottom: 30px;
-        display: block;
-    `;
+        // Créer l'icône Jelly
+        const customSpinner = document.createElement('l-jelly');
+        customSpinner.setAttribute('size', '60');
+        customSpinner.setAttribute('speed', '0.9');
+        customSpinner.setAttribute('color', '#ffcc00');
+        customSpinner.style.cssText = `
+            margin-bottom: 30px;
+            display: block;
+        `;
 
-    // Insérer le spinner avant le texte de chargement
-    const loadingText = loadingScreen.querySelector('p');
-    if (loadingText) {
-        loadingScreen.insertBefore(customSpinner, loadingText);
+        // Insérer le spinner avant le texte de chargement
+        const loadingText = loadingScreen.querySelector('p');
+        if (loadingText) {
+            loadingScreen.insertBefore(customSpinner, loadingText);
+        } else {
+            loadingScreen.appendChild(customSpinner);
+        }
     } else {
-        loadingScreen.appendChild(customSpinner);
+        // Fallback : créer un simple spinner CSS
+        const simpleSpinner = document.createElement('div');
+        simpleSpinner.className = 'simple-spinner';
+        simpleSpinner.style.cssText = `
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(255, 204, 0, 0.3);
+            border-top: 3px solid #ffcc00;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 30px;
+        `;
+        
+        // Ajouter l'animation CSS si elle n'existe pas
+        if (!document.getElementById('spinner-animation')) {
+            const style = document.createElement('style');
+            style.id = 'spinner-animation';
+            style.textContent = `
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        const loadingText = loadingScreen.querySelector('p');
+        if (loadingText) {
+            loadingScreen.insertBefore(simpleSpinner, loadingText);
+        } else {
+            loadingScreen.appendChild(simpleSpinner);
+        }
     }
     
     // Créer le conteneur de la barre de progression
