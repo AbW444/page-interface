@@ -1,7 +1,5 @@
 // Point d'entrée principal de l'application Mondes Immergés
-import './styles/main.css';
-import { initApp, getAppInstance } from './app.js';
-// Import ldrs supprimé - sera chargé via CDN
+// Version JavaScript classique pour GitHub Pages
 
 /**
  * Fonction principale d'initialisation
@@ -9,6 +7,17 @@ import { initApp, getAppInstance } from './app.js';
  */
 function initialize() {
     console.log('Application Mondes Immergés en cours de chargement...');
+    
+    // Vérifier que les dépendances sont chargées
+    if (typeof THREE === 'undefined') {
+        console.error('Three.js non chargé');
+        return;
+    }
+    
+    if (typeof gsap === 'undefined') {
+        console.error('GSAP non chargé');
+        return;
+    }
     
     // Désactiver complètement toutes les interactions de glissement
 	const style = document.createElement('style');
@@ -49,32 +58,28 @@ function initialize() {
     let resourcesLoaded = 0;
     const totalResources = 8; // Nombre total de ressources à charger
     
-    // Element de progression - seront créés par enhanceLoadingScreen()
-	let progressBar = null;
-	let progressText = null;
-    
     // Fonction de mise à jour de la progression
-		const updateProgress = () => {
-		resourcesLoaded++;
-		const progress = Math.round((resourcesLoaded / totalResources) * 100);
-		
-		// Récupérer les éléments à chaque fois (ils sont créés par enhanceLoadingScreen)
-		const currentProgressBar = document.querySelector('.progress-bar');
-		const currentProgressText = document.querySelector('.progress-text');
-		
-		if (currentProgressBar) {
-			currentProgressBar.style.width = `${progress}%`;
-		}
-		
-		if (currentProgressText) {
-			currentProgressText.textContent = `${progress}%`;
-		}
-		
-		// Si toutes les ressources sont chargées, démarrer l'application
-		if (resourcesLoaded >= totalResources) {
-			startApplication();
-		}
-	};
+    const updateProgress = () => {
+        resourcesLoaded++;
+        const progress = Math.round((resourcesLoaded / totalResources) * 100);
+        
+        // Récupérer les éléments à chaque fois (ils sont créés par enhanceLoadingScreen)
+        const currentProgressBar = document.querySelector('.progress-bar');
+        const currentProgressText = document.querySelector('.progress-text');
+        
+        if (currentProgressBar) {
+            currentProgressBar.style.width = `${progress}%`;
+        }
+        
+        if (currentProgressText) {
+            currentProgressText.textContent = `${progress}%`;
+        }
+        
+        // Si toutes les ressources sont chargées, démarrer l'application
+        if (resourcesLoaded >= totalResources) {
+            startApplication();
+        }
+    };
     
     // Simuler le chargement des ressources avec des temps plus courts
     const resourceTypes = [
@@ -170,63 +175,108 @@ function createStarfieldAnimation() {
 function startApplication() {
     console.log('Démarrage de l\'application...');
     
-    // Initialiser l'application mais ne pas encore la rendre visible
-    initApp();
+    // Pour cette version simplifiée, juste afficher l'interface
+    const loadingScreen = document.getElementById('loading-screen');
+    const mainContainer = document.getElementById('main-container');
     
-    // Récupérer l'instance de l'application
-    const app = getAppInstance();
+    if (loadingScreen) {
+        gsap.to(loadingScreen, {
+            opacity: 0,
+            duration: 0.5,
+            onComplete: () => {
+                loadingScreen.style.display = 'none';
+            }
+        });
+    }
     
-    // Simuler un court délai avant de commencer la séquence d'initialisation fictive
-    setTimeout(() => {
-        // Simuler le chargement fictif avec la séquence d'initialisation
-        if (app) {
-            // Cette fonction va démarrer la séquence d'initialisation et,
-            // une fois terminée, va automatiquement démarrer l'exploration
-            triggerStartupSequence(app);
-        } else {
-            console.error("Impossible de récupérer l'instance de l'application");
-        }
-    }, 300);
+    if (mainContainer) {
+        mainContainer.classList.remove('hidden');
+        gsap.to(mainContainer, {
+            opacity: 1,
+            duration: 1,
+            ease: "power2.out"
+        });
+    }
+    
+    // Initialiser les interactions de base
+    initBasicInteractions();
 }
 
 /**
- * Déclenche la séquence d'initialisation fictive, puis démarre l'exploration
- * @param {Object} app - Instance de l'application
+ * Initialise les interactions de base
  */
-function triggerStartupSequence(app) {
-    // Masquer l'écran de chargement initial
-    const loadingScreen = document.getElementById('loading-screen');
-    if (loadingScreen) {
-        loadingScreen.style.opacity = '0';
-        loadingScreen.style.transform = 'scale(1.1)';
-        
-        setTimeout(() => {
-            loadingScreen.classList.add('hidden');
-            
-            // S'assurer que le conteneur principal est visible pour les animations
-            // mais sans montrer l'interface complète encore
-            const mainContainer = document.getElementById('main-container');
-            mainContainer.classList.remove('hidden');
-            mainContainer.style.opacity = '1';
-            
-            // Démarrer la séquence d'initialisation fictive
-            if (app.startupSequence) {
-                // Exécuter la séquence de démarrage fictive
-                app.startupSequence();
-                
-                // Après la séquence de démarrage, lancer l'exploration SANS nouvelle séquence
-                setTimeout(() => {
-                    app.startExploration(true); // true = skip la seconde séquence d'initialisation
-                }, 5000); // Ajustez ce délai si nécessaire pour correspondre à la durée des animations
-            } else {
-                // Fallback si la fonction startupSequence n'existe pas
-                app.startExploration(true);
-            }
-        }, 500);
-    } else {
-        // Si l'écran de chargement n'existe pas, initialiser directement
-        app.startExploration(true);
+function initBasicInteractions() {
+    // Gestion des boutons
+    const zoomInBtn = document.getElementById('zoom-in');
+    const zoomOutBtn = document.getElementById('zoom-out');
+    const resetViewBtn = document.getElementById('reset-view');
+    const infoBtn = document.getElementById('info-button');
+    const closeInfoBtn = document.getElementById('close-info');
+    const infoOverlay = document.getElementById('info-overlay');
+    
+    if (zoomInBtn) {
+        zoomInBtn.addEventListener('click', () => {
+            console.log('Zoom in cliqué');
+            animateButtonClick(zoomInBtn);
+        });
     }
+    
+    if (zoomOutBtn) {
+        zoomOutBtn.addEventListener('click', () => {
+            console.log('Zoom out cliqué');
+            animateButtonClick(zoomOutBtn);
+        });
+    }
+    
+    if (resetViewBtn) {
+        resetViewBtn.addEventListener('click', () => {
+            console.log('Reset view cliqué');
+            animateButtonClick(resetViewBtn);
+        });
+    }
+    
+    if (infoBtn && infoOverlay) {
+        infoBtn.addEventListener('click', () => {
+            animateButtonClick(infoBtn);
+            gsap.to(infoOverlay, {
+                opacity: 1,
+                duration: 0.3,
+                onStart: () => {
+                    infoOverlay.classList.remove('hidden');
+                    infoOverlay.style.pointerEvents = 'all';
+                }
+            });
+        });
+    }
+    
+    if (closeInfoBtn && infoOverlay) {
+        closeInfoBtn.addEventListener('click', () => {
+            gsap.to(infoOverlay, {
+                opacity: 0,
+                duration: 0.3,
+                onComplete: () => {
+                    infoOverlay.classList.add('hidden');
+                    infoOverlay.style.pointerEvents = 'none';
+                }
+            });
+        });
+    }
+}
+
+/**
+ * Anime un clic de bouton
+ */
+function animateButtonClick(button) {
+    gsap.timeline()
+        .to(button, {
+            scale: 0.9,
+            duration: 0.1
+        })
+        .to(button, {
+            scale: 1,
+            duration: 0.2,
+            ease: "back.out(1.7)"
+        });
 }
 
 function enhanceLoadingScreen() {
@@ -243,61 +293,37 @@ function enhanceLoadingScreen() {
         existingSpinner.remove();
     }
     
-    // Vérifier si ldrs est disponible avant de l'utiliser
-    if (typeof window.ldrs !== 'undefined' && window.ldrs.jelly) {
-        // Enregistrer l'icône Jelly (une seule fois)
-        window.ldrs.jelly.register();
-
-        // Créer l'icône Jelly
-        const customSpinner = document.createElement('l-jelly');
-        customSpinner.setAttribute('size', '60');
-        customSpinner.setAttribute('speed', '0.9');
-        customSpinner.setAttribute('color', '#ffcc00');
-        customSpinner.style.cssText = `
-            margin-bottom: 30px;
-            display: block;
+    // Créer un spinner simple
+    const simpleSpinner = document.createElement('div');
+    simpleSpinner.className = 'simple-spinner';
+    simpleSpinner.style.cssText = `
+        width: 60px;
+        height: 60px;
+        border: 3px solid rgba(255, 204, 0, 0.3);
+        border-top: 3px solid #ffcc00;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 30px;
+    `;
+    
+    // Ajouter l'animation CSS si elle n'existe pas
+    if (!document.getElementById('spinner-animation')) {
+        const style = document.createElement('style');
+        style.id = 'spinner-animation';
+        style.textContent = `
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
         `;
-
-        // Insérer le spinner avant le texte de chargement
-        const loadingText = loadingScreen.querySelector('p');
-        if (loadingText) {
-            loadingScreen.insertBefore(customSpinner, loadingText);
-        } else {
-            loadingScreen.appendChild(customSpinner);
-        }
+        document.head.appendChild(style);
+    }
+    
+    const loadingText = loadingScreen.querySelector('p');
+    if (loadingText) {
+        loadingScreen.insertBefore(simpleSpinner, loadingText);
     } else {
-        // Fallback : créer un simple spinner CSS
-        const simpleSpinner = document.createElement('div');
-        simpleSpinner.className = 'simple-spinner';
-        simpleSpinner.style.cssText = `
-            width: 60px;
-            height: 60px;
-            border: 3px solid rgba(255, 204, 0, 0.3);
-            border-top: 3px solid #ffcc00;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 30px;
-        `;
-        
-        // Ajouter l'animation CSS si elle n'existe pas
-        if (!document.getElementById('spinner-animation')) {
-            const style = document.createElement('style');
-            style.id = 'spinner-animation';
-            style.textContent = `
-                @keyframes spin {
-                    0% { transform: rotate(0deg); }
-                    100% { transform: rotate(360deg); }
-                }
-            `;
-            document.head.appendChild(style);
-        }
-        
-        const loadingText = loadingScreen.querySelector('p');
-        if (loadingText) {
-            loadingScreen.insertBefore(simpleSpinner, loadingText);
-        } else {
-            loadingScreen.appendChild(simpleSpinner);
-        }
+        loadingScreen.appendChild(simpleSpinner);
     }
     
     // Créer le conteneur de la barre de progression
@@ -346,17 +372,6 @@ function enhanceLoadingScreen() {
     loadingScreen.appendChild(progressContainer);
 }
 
-// S'assurer que le DOM est complètement chargé avant d'initialiser
-document.addEventListener('DOMContentLoaded', () => {
-    // D'abord améliorer l'écran de chargement pour créer les éléments
-    enhanceLoadingScreen();
-    
-    // Puis démarrer l'initialisation après un court délai
-    setTimeout(() => {
-        initialize();
-    }, 100);
-});
-
 function initCustomCursor() {
     const cursor = document.querySelector('.cursor');
     const follower = document.querySelector('.cursor-follower');
@@ -373,7 +388,16 @@ function initCustomCursor() {
     });
 }
 
-// Appeler juste après le chargement
-window.addEventListener("load", function () {
+// S'assurer que le DOM est complètement chargé avant d'initialiser
+document.addEventListener('DOMContentLoaded', () => {
+    // D'abord améliorer l'écran de chargement pour créer les éléments
+    enhanceLoadingScreen();
+    
+    // Puis démarrer l'initialisation après un court délai
+    setTimeout(() => {
+        initialize();
+    }, 100);
+    
+    // Initialiser le curseur
     initCustomCursor();
 });
