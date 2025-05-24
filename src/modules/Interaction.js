@@ -1,5 +1,4 @@
 // Gestionnaire d'interactions pour Mondes Immergés
-import { gsap } from 'gsap';
 
 export class Interaction {
     /**

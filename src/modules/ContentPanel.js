@@ -1,5 +1,4 @@
 // Gestionnaire de panneau de contenu pour Mondes Immergés
-import { gsap } from 'gsap';
 
 export class ContentPanel {
     /**

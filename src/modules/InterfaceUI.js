@@ -1,5 +1,5 @@
 // Gestionnaire d'interface utilisateur pour Mondes Immergés
-import { gsap } from 'gsap';
+
 
 export class InterfaceUI {
     /**

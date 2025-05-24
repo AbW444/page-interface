@@ -1,6 +1,6 @@
 // Gestionnaire de globe pour Mondes Immergés
 import * as THREE from 'three';
-import { gsap } from 'gsap';
+
 
 export class GlobeManager {
     constructor(options) {

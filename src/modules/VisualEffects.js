@@ -1,7 +1,7 @@
 // Modification du fichier VisualEffects.js pour ajouter les fonctions manquantes
 
 // Effets visuels pour Mondes Immergés
-import { gsap } from 'gsap';
+
 
 export class VisualEffects {
     /**

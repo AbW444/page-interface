@@ -1,7 +1,6 @@
 // Composants d'interface utilisateur pour Mondes Immergés
 // Ce module fournit des composants réutilisables pour enrichir l'interface
 
-import { gsap } from 'gsap';
 import { 
     fadeElement, 
     slideElement, 

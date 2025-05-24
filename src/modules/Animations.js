@@ -1,7 +1,6 @@
 // Utilitaires d'animation pour Mondes Immergés
 // Ce module centralise les animations et transitions pour maintenir
 // une cohérence visuelle dans l'ensemble de l'application
-import { gsap } from 'gsap';
 
 // Collection d'effets visuels réutilisables
 export const AnimationEffects = {
