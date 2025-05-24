@@ -1,0 +1,29 @@
+{
+  "name": "mondes-immerges",
+  "version": "1.0.0",
+  "description": "Expérience immersive sur les océans par National Geographic",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "three.js",
+    "gsap",
+    "webgl",
+    "ocean",
+    "interactive",
+    "3d"
+  ],
+  "author": "National Geographic",
+  "license": "MIT",
+  "dependencies": {
+    "gsap": "^3.13.0",
+    "ldrs": "^1.1.7",
+    "three": "^0.163.0"
+  },
+  "devDependencies": {
+    "vite": "^5.1.4"
+  }
+}
