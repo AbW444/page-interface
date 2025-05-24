@@ -1,5 +1,4 @@
 // Gestionnaire de globe pour Mondes Immergés
-import * as THREE from 'three';
 
 
 export class GlobeManager {

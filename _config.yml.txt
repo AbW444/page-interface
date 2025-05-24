@@ -1,0 +1,20 @@
+# Configuration pour GitHub Pages
+plugins:
+  - jekyll-optional-front-matter
+
+# Inclusion des fichiers JavaScript
+include:
+  - "src/**/*.js"
+
+# Configuration des types MIME
+defaults:
+  - scope:
+      path: "src"
+      type: "pages"
+    values:
+      layout: null
+
+# Traitement des fichiers
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
